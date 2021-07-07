@@ -108,7 +108,7 @@ exports.signIn = (model) => {
           role: user.role,
         },
         'somesupersecret',
-        { expiresIn: '1h' },
+        { expiresIn: '365d' },
       );
 
       const expiryDate = Date.now() + 3600000;
