@@ -4,7 +4,7 @@ const { body } = require('express-validator');
 const { isAuth, isSuperAdmin, isAdmin } = require('../middleware/auth');
 const { imageUpload } = require('../middleware/upload');
 
-const controller = require('../controllers/product-category');
+const controller = require('../controllers/category');
 
 const router = express.Router();
 
@@ -15,46 +15,46 @@ const validBody = [
 
 // GET
 router.get(
-  '/admin/product-categories',
+  '/admin/categories',
   isAuth, isAdmin,
-  controller.getProdCats,
+  controller.getCategories,
 );
 
 router.get(
-  '/product-categories',
-  controller.getProdCats,
+  '/categories',
+  controller.getCategories,
 );
 
 router.get(
-  '/admin/product-categories/:id',
+  '/admin/categories/:id',
   isAuth, isAdmin,
-  controller.getProdCat,
+  controller.getCategory,
 );
 
 router.get(
-  '/product-categories/:id',
-  controller.getProdCat,
+  '/categories/:id',
+  controller.getCategory,
 );
 
 // POST
 router.post(
-  '/admin/product-categories/new',
-  isAuth, isAdmin, imageUpload('prod-cat').single('image'), validBody,
-  controller.postProdCat,
+  '/admin/categories/new',
+  isAuth, isAdmin, imageUpload('category').single('image'), validBody,
+  controller.postCategory,
 );
 
 // PUT
 router.put(
-  '/admin/product-categories/:id',
-  isAuth, isAdmin, imageUpload('prod-cat').single('image'), validBody,
-  controller.putProdCat,
+  '/admin/categories/:id',
+  isAuth, isAdmin, imageUpload('category').single('image'), validBody,
+  controller.putCategory,
 );
 
 // DELETE
 router.delete(
-  '/admin/product-categories/:id',
+  '/admin/categories/:id',
   isAuth, isAdmin,
-  controller.deleteProdCat,
+  controller.deleteCategory,
 );
 
 module.exports = router;

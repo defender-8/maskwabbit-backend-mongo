@@ -3,10 +3,10 @@ const { validationResult } = require('express-validator');
 const { deleteFile } = require('../utils/file');
 
 const Product = require('../models/product');
-const ProductCategory = require('../models/product-category');
+const Category = require('../models/category');
 
 // GET
-exports.getProdCats = async (req, res, next) => {
+exports.getCategories = async (req, res, next) => {
   try {
     if (Object.keys(req.query).length !== 0) {
       const { page, sorter, search } = req.query;
@@ -21,17 +21,17 @@ exports.getProdCats = async (req, res, next) => {
         title: regExObj,
       };
 
-      const prodCats = await ProductCategory.find(conditions)
+      const categories = await Category.find(conditions)
         .sort(sorter)
         .skip(((currentPage - 1) * pageSize))
         .limit(pageSize);
 
-      const total = await ProductCategory.countDocuments(conditions);
+      const total = await Category.countDocuments(conditions);
 
-      res.status(200).json({ prodCats, total });
+      res.status(200).json({ categories, total });
     } else {
-      const prodCats = await ProductCategory.find();
-      res.status(200).json({ prodCats });
+      const categories = await Category.find();
+      res.status(200).json({ categories });
     }
   } catch (err) {
     if (!err.statusCode) {
@@ -41,12 +41,12 @@ exports.getProdCats = async (req, res, next) => {
   }
 };
 
-exports.getProdCat = async (req, res, next) => {
+exports.getCategory = async (req, res, next) => {
   const id = req.params.id;
 
   try {
-    const prodCat = await ProductCategory.findById(id);
-    res.status(200).json({ prodCat });
+    const category = await Category.findById(id);
+    res.status(200).json({ category });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -56,12 +56,12 @@ exports.getProdCat = async (req, res, next) => {
 };
 
 // POST
-exports.postProdCat = async (req, res, next) => {
+exports.postCategory = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const { title, description } = req.body;
   const image = req.file.path;
 
-  const prodCat = new ProductCategory({
+  const category = new Category({
     title,
     description,
     image,
@@ -82,7 +82,7 @@ exports.postProdCat = async (req, res, next) => {
       throw err;
     }
 
-    await prodCat.save();
+    await category.save();
     res.status(201).json({ message: 'Product category is saved!' });
   } catch (err) {
     if (!err.statusCode) {
@@ -93,7 +93,7 @@ exports.postProdCat = async (req, res, next) => {
 };
 
 // PUT
-exports.putProdCat = async (req, res, next) => {
+exports.putCategory = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const id = req.params.id;
   const { ...values } = req.body;
@@ -106,22 +106,22 @@ exports.putProdCat = async (req, res, next) => {
       throw err;
     }
 
-    const prodCat = await ProductCategory.findById(id);
+    const category = await Category.findById(id);
 
     if (req.file) {
       const image = req.file.path;
 
-      deleteFile(prodCat.image);
+      deleteFile(category.image);
 
       values.image = image;
     }
 
-    await prodCat.updateOne({ ...values });
+    await category.updateOne({ ...values });
 
-    const prodCatUpdated = await ProductCategory.findById(id);
+    const categoryUpdated = await Category.findById(id);
 
     res.status(200).json({
-      prodCat: prodCatUpdated,
+      category: categoryUpdated,
       message: 'Product category is saved!',
     });
   } catch (err) {
@@ -133,7 +133,7 @@ exports.putProdCat = async (req, res, next) => {
 };
 
 // DELETE
-exports.deleteProdCat = async (req, res, next) => {
+exports.deleteCategory = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -142,7 +142,7 @@ exports.deleteProdCat = async (req, res, next) => {
       setTimeout(() => resolve('done'), 3000);
     });*/
 
-    ProductCategory.findOneAndDelete(
+    Category.findOneAndDelete(
       { _id: id },
       (err, doc) => {
         if (err) throw err;

@@ -3,11 +3,9 @@ const { validationResult } = require('express-validator');
 const { deleteFile } = require('../utils/file');
 
 const Product = require('../models/product');
-const ProductCategory = require('../models/product-category');
 
 // GET
 exports.getProducts = async (req, res, next) => {
-  // console.log('>>>>>>>> req.query:\n', req.query);
   let { page, sorter, filters, search } = req.query;
   let { currentPage, pageSize } = page;
 
@@ -20,23 +18,14 @@ exports.getProducts = async (req, res, next) => {
     title: regExObj,
   };
 
+  if (filters.categories) {
+    conditions.categories = { $in: filters.categories };
+  }
+
   try {
-    const prodCats = await ProductCategory.find().select('title _id');
-
-    const prodCatsLight = prodCats.map(pc => [pc.title, pc._id]);
-
-    if (filters.productCategory) {
-      const pcFilter = filters.productCategory.map(pc => {
-        const catId = prodCatsLight.find(pcl => pcl[0] === pc)[1];
-        return catId;
-      });
-
-      conditions.productCategory = pcFilter;
-    }
-
     const products = await Product.find(conditions)
       .sort(sorter)
-      .populate('productCategory', 'title')
+      .populate('categories')
       .skip(((currentPage - 1) * pageSize))
       .limit(pageSize);
 
@@ -68,14 +57,14 @@ exports.getProduct = async (req, res, next) => {
 // POST
 exports.postProduct = async (req, res, next) => {
   const validationErrors = validationResult(req);
-  const { title, description, productCategory, price, amount } = req.body;
+  const { title, description, categories, price, amount } = req.body;
   const image = req.file.path;
 
   const product = new Product({
     title,
     image,
     description,
-    productCategory,
+    categories: categories.split(','),
     price,
     amount,
     createdBy: req.userId,
@@ -110,6 +99,8 @@ exports.putProduct = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const id = req.params.id;
   const { ...values } = req.body;
+
+  values.categories = values.categories.split(',');
 
   try {
     if (!validationErrors.isEmpty()) {

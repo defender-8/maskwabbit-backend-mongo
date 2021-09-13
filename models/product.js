@@ -20,11 +20,13 @@ const productSchema = new Schema({
     type: Number,
     required: true,
   },
-  productCategory: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'ProductCategory',
-  },
+  categories: [
+    {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Category',
+    }
+  ],
   createdBy: {
     type: Schema.Types.ObjectId,
     required: true,

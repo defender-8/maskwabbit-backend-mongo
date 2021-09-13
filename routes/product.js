@@ -11,7 +11,7 @@ const router = express.Router();
 const validBody = [
   body('title', 'Title is required').not().isEmpty().trim(),
   body('description').trim(),
-  body('productCategory', 'Product category is required').not().isEmpty(),
+  body('categories', 'Category is required').not().isEmpty(),
   body('price').not().isEmpty().withMessage('Price is required').isFloat().withMessage(
     'Price must be a number'),
   body('amount').not().isEmpty().withMessage('Amount is required').isInt().withMessage(

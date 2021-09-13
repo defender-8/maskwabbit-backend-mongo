@@ -9,7 +9,7 @@ const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const clientRoutes = require('./routes/client');
 const productRoutes = require('./routes/product');
-const prodCatRoutes = require('./routes/product-category');
+const categoryRoutes = require('./routes/category');
 const orderRoutes = require('./routes/order');
 
 const app = express();
@@ -39,7 +39,7 @@ app.use(authRoutes);
 app.use(adminRoutes);
 app.use(clientRoutes);
 app.use(productRoutes);
-app.use(prodCatRoutes);
+app.use(categoryRoutes);
 app.use(orderRoutes);
 
 app.use((err, req, res, next) => {
