@@ -22,7 +22,7 @@ exports.get = async (req, res, next) => {
   }
 
   try {
-    const products = await Product.find(conditions)
+    const dataArray = await Product.find(conditions)
       .sort(sorter)
       .populate('categories')
       .skip(((currentPage - 1) * pageSize))
@@ -30,7 +30,7 @@ exports.get = async (req, res, next) => {
 
     const total = await Product.countDocuments(conditions);
 
-    res.status(200).json({ products, total });
+    res.status(200).json({ dataArray, total });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -43,8 +43,8 @@ exports.getById = async (req, res, next) => {
   const id = req.params.id;
 
   try {
-    const product = await Product.findById(id);
-    res.status(200).json({ product });
+    const dataSingle = await Product.findById(id);
+    res.status(200).json({ dataSingle });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -107,22 +107,22 @@ exports.put = async (req, res, next) => {
       throw err;
     }
 
-    const product = await Product.findById(id);
+    const dataSingle = await Product.findById(id);
 
     if (req.file) {
       const image = req.file.path;
 
-      deleteFile(product.image);
+      deleteFile(dataSingle.image);
 
       values.image = image;
     }
 
-    await product.updateOne({ ...values });
+    await dataSingle.updateOne({ ...values });
 
-    const prodUpdated = await Product.findById(id);
+    const dataSingleUpdated = await Product.findById(id);
 
     res.status(200).json({
-      product: prodUpdated,
+      dataSingle: dataSingleUpdated,
       message: 'Product is saved!',
     });
   } catch (err) {
