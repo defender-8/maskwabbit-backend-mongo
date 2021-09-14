@@ -4,8 +4,7 @@ const { deleteFile } = require('../utils/file');
 
 const Product = require('../models/product');
 
-// GET
-exports.getProducts = async (req, res, next) => {
+exports.get = async (req, res, next) => {
   let { page, sorter, filters, search } = req.query;
   let { currentPage, pageSize } = page;
 
@@ -40,7 +39,7 @@ exports.getProducts = async (req, res, next) => {
   }
 };
 
-exports.getProduct = async (req, res, next) => {
+exports.getById = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -54,8 +53,7 @@ exports.getProduct = async (req, res, next) => {
   }
 };
 
-// POST
-exports.postProduct = async (req, res, next) => {
+exports.post = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const { title, description, categories, price, amount } = req.body;
   const image = req.file.path;
@@ -94,8 +92,7 @@ exports.postProduct = async (req, res, next) => {
   }
 };
 
-// PUT
-exports.putProduct = async (req, res, next) => {
+exports.put = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const id = req.params.id;
   const { ...values } = req.body;
@@ -136,8 +133,7 @@ exports.putProduct = async (req, res, next) => {
   }
 };
 
-// DELETE
-exports.deleteProduct = async (req, res, next) => {
+exports.delete = async (req, res, next) => {
   const id = req.params.id;
 
   try {

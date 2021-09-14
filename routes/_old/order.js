@@ -2,9 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { body } = require('express-validator');
 
-const { isAuth, isSuperAdmin, isAdmin } = require('../middleware/auth');
+const { isAuth, isAdmin } = require('../../middleware/auth');
 
-const controller = require('../controllers/order');
+const controller = require('../../controllers/order');
 
 const router = express.Router();
 

@@ -3,8 +3,7 @@ const { validationResult } = require('express-validator');
 
 const Client = require('../models/client');
 
-// GET
-exports.getUsers = async (req, res, next) => {
+exports.get = async (req, res, next) => {
   const { page, sorter, search } = req.query;
   let { currentPage, pageSize } = page;
 
@@ -34,7 +33,7 @@ exports.getUsers = async (req, res, next) => {
   }
 };
 
-exports.getUser = async (req, res, next) => {
+exports.getById = async (req, res, next) => {
   const id = req.params.id;
   const currentUserId = req.userId;
 
@@ -56,8 +55,48 @@ exports.getUser = async (req, res, next) => {
   }
 };
 
-// POST
-exports.postChangePassword = async (req, res, next) => {
+exports.put = async (req, res, next) => {
+  const validationErrors = validationResult(req);
+  const id = req.params.id;
+  const currentUserId = req.userId;
+  const currentUserRole = req.userRole;
+  const { ...values } = req.body;
+  const { firstName, lastName } = { ...values };
+  const fullName = firstName + ' ' + lastName;
+
+  try {
+    if (!validationErrors.isEmpty()) {
+      const err = new Error('Validation failed, entered data is incorrect!');
+      err.statusCode = 422;
+      err.valErrArr = validationErrors.array();
+      throw err;
+    }
+
+    const user = await Client.findById(id);
+
+    if (id !== currentUserId) {
+      const err = new Error('Access is not allowed!');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    await user.updateOne({ fullName, ...values });
+
+    const userUpdated = await Client.findById(id);
+
+    res.status(200).json({
+      user: userUpdated,
+      message: 'User is saved!',
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.changePassword = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const { currentPassword, newPassword, userId } = req.body;
   const currentUserId = req.userId;
@@ -102,50 +141,7 @@ exports.postChangePassword = async (req, res, next) => {
   }
 };
 
-// PUT
-exports.putUser = async (req, res, next) => {
-  const validationErrors = validationResult(req);
-  const id = req.params.id;
-  const currentUserId = req.userId;
-  const currentUserRole = req.userRole;
-  const { ...values } = req.body;
-  const { firstName, lastName } = { ...values };
-  const fullName = firstName + ' ' + lastName;
-
-  try {
-    if (!validationErrors.isEmpty()) {
-      const err = new Error('Validation failed, entered data is incorrect!');
-      err.statusCode = 422;
-      err.valErrArr = validationErrors.array();
-      throw err;
-    }
-
-    const user = await Client.findById(id);
-
-    if (id !== currentUserId) {
-      const err = new Error('Access is not allowed!');
-      err.statusCode = 403;
-      throw err;
-    }
-
-    await user.updateOne({ fullName, ...values });
-
-    const userUpdated = await Client.findById(id);
-
-    res.status(200).json({
-      user: userUpdated,
-      message: 'User is saved!',
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
-// DELETE
-exports.deleteUser = async (req, res, next) => {
+exports.delete = async (req, res, next) => {
   const id = req.params.id;
 
   try {

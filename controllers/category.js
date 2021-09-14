@@ -2,11 +2,9 @@ const { validationResult } = require('express-validator');
 
 const { deleteFile } = require('../utils/file');
 
-const Product = require('../models/product');
 const Category = require('../models/category');
 
-// GET
-exports.getCategories = async (req, res, next) => {
+exports.get = async (req, res, next) => {
   try {
     if (Object.keys(req.query).length !== 0) {
       const { page, sorter, search } = req.query;
@@ -41,7 +39,7 @@ exports.getCategories = async (req, res, next) => {
   }
 };
 
-exports.getCategory = async (req, res, next) => {
+exports.getById = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -55,8 +53,7 @@ exports.getCategory = async (req, res, next) => {
   }
 };
 
-// POST
-exports.postCategory = async (req, res, next) => {
+exports.post = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const { title, description } = req.body;
   const image = req.file.path;
@@ -92,8 +89,7 @@ exports.postCategory = async (req, res, next) => {
   }
 };
 
-// PUT
-exports.putCategory = async (req, res, next) => {
+exports.put = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const id = req.params.id;
   const { ...values } = req.body;
@@ -132,8 +128,7 @@ exports.putCategory = async (req, res, next) => {
   }
 };
 
-// DELETE
-exports.deleteCategory = async (req, res, next) => {
+exports.delete = async (req, res, next) => {
   const id = req.params.id;
 
   try {

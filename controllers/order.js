@@ -7,10 +7,7 @@ const Product = require('../models/product');
 
 const endpointSecret = 'whsec_QzPtqgjHDTJJALVl0V3PjBZjfQezCw3m';
 
-// GET
-exports.getOrders = async (req, res, next) => {
-  console.log('>>>>>>>>>>\n', req.query);
-
+exports.get = async (req, res, next) => {
   const { page, sorter, filters, search } = req.query;
   let { currentPage, pageSize } = page;
 
@@ -56,7 +53,7 @@ exports.getUserOrders = async (req, res, next) => {
   }
 };
 
-exports.getOrder = async (req, res, next) => {
+exports.getById = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -72,7 +69,6 @@ exports.getOrder = async (req, res, next) => {
   }
 };
 
-// POST
 exports.postCheckout = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const { cartItems, cartTotal } = req.body;
@@ -124,7 +120,7 @@ exports.postCheckout = async (req, res, next) => {
   }
 };
 
-exports.postOrder = async (req, res, next) => {
+exports.post = async (req, res, next) => {
   const payload = req.body;
   const sig = req.headers['stripe-signature'];
 
@@ -180,9 +176,7 @@ exports.postOrder = async (req, res, next) => {
   }
 };
 
-
-// PUT
-exports.putOrder = async (req, res, next) => {
+exports.put = async (req, res, next) => {
   const validationErrors = validationResult(req);
 
   const { ...values } = req.body;
@@ -213,8 +207,7 @@ exports.putOrder = async (req, res, next) => {
   }
 };
 
-// DELETE
-exports.deleteOrder = async (req, res, next) => {
+exports.delete = async (req, res, next) => {
   const id = req.params.id;
 
   try {

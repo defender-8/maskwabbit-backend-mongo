@@ -1,10 +1,10 @@
 const express = require('express');
 const { body } = require('express-validator');
 
-const { isAuth, isSuperAdmin, isAdmin } = require('../middleware/auth');
-const { imageUpload } = require('../middleware/upload');
+const { isAuth, isAdmin } = require('../../middleware/auth');
+const { imageUpload } = require('../../middleware/upload');
 
-const controller = require('../controllers/category');
+const controller = require('../../controllers/category');
 
 const router = express.Router();
 

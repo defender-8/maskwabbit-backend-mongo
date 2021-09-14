@@ -4,13 +4,9 @@ const express = require('express');
 const { mongoConnect } = require('./utils/db');
 const bodyParser = require('body-parser');
 
-const appRoutes = require('./routes/app');
-const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/admin');
-const clientRoutes = require('./routes/client');
-const productRoutes = require('./routes/product');
-const categoryRoutes = require('./routes/category');
-const orderRoutes = require('./routes/order');
+const clientRouter = require('./routes/client');
+const dashboardRouter = require('./routes/dashboard');
+
 
 const app = express();
 
@@ -34,13 +30,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(appRoutes);
-app.use(authRoutes);
-app.use(adminRoutes);
-app.use(clientRoutes);
-app.use(productRoutes);
-app.use(categoryRoutes);
-app.use(orderRoutes);
+app.use(clientRouter);
+app.use('/dashboard', dashboardRouter);
 
 app.use((err, req, res, next) => {
   console.log(err);

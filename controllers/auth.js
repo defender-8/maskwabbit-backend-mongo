@@ -132,7 +132,7 @@ exports.signIn = (model) => {
   };
 };
 
-exports.postResetPassword = (model) => {
+exports.resetPassword = (model) => {
   return async (req, res, next) => {
     const validationErrors = validationResult(req);
     const email = req.body.email;
@@ -199,7 +199,7 @@ exports.postResetPassword = (model) => {
   };
 };
 
-exports.postNewPassword = (model) => {
+exports.changePassword = (model) => {
   return async (req, res, next) => {
     const validationErrors = validationResult(req);
     const { password, userId } = req.body;

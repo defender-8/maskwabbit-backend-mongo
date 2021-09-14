@@ -1,10 +1,10 @@
 const express = require('express');
 const { body } = require('express-validator');
 
-const { isAuth, isSuperAdmin, isAdmin } = require('../middleware/auth');
-const { imageUpload } = require('../middleware/upload');
+const { isAuth, isAdmin } = require('../../middleware/auth');
+const { imageUpload } = require('../../middleware/upload');
 
-const controller = require('../controllers/product');
+const controller = require('../../controllers/product');
 
 const router = express.Router();
 
@@ -18,43 +18,22 @@ const validBody = [
     'Amount must be a number'),
 ];
 
-// GET
-router.get(
-  '/admin/products',
-  isAuth, isAdmin,
-  controller.getProducts,
-);
+router.get('/', isAuth, isAdmin, controller.get);
+router.get('/:id', isAuth, isAdmin, controller.getById);
 
-router.get(
-  '/products',
-  controller.getProducts,
-);
-
-router.get('/admin/products/:id',
-  isAuth, isAdmin,
-  controller.getProduct,
-);
-
-// POST
 router.post(
-  '/admin/products/new',
+  '/new',
   isAuth, isAdmin, imageUpload('product').single('image'), validBody,
-  controller.postProduct,
+  controller.post,
 );
 
-// PUT
 router.put(
-  '/admin/products/:id',
+  '/:id',
   isAuth, isAdmin, imageUpload('product').single('image'), validBody,
-  controller.putProduct,
+  controller.put,
 );
 
-// DELETE
-router.delete(
-  '/admin/products/:id',
-  isAuth, isAdmin,
-  controller.deleteProduct,
-);
+router.delete('/:id', isAuth, isAdmin, controller.delete);
 
 module.exports = router;
 

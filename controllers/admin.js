@@ -3,8 +3,7 @@ const { validationResult } = require('express-validator');
 
 const Admin = require('../models/admin');
 
-// GET
-exports.getUsers = async (req, res, next) => {
+exports.get = async (req, res, next) => {
   const { role, page, sorter, search } = req.query;
   let { currentPage, pageSize } = page;
 
@@ -35,7 +34,7 @@ exports.getUsers = async (req, res, next) => {
   }
 };
 
-exports.getUser = async (req, res, next) => {
+exports.getById = async (req, res, next) => {
   const id = req.params.id;
   const currentUserId = req.userId;
   const currentUserRole = req.userRole;
@@ -67,8 +66,7 @@ exports.getUser = async (req, res, next) => {
   }
 };
 
-// POST
-exports.postUser = async (req, res, next) => {
+exports.post = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const { firstName, lastName, email, password, role } = req.body;
   const fullName = firstName + ' ' + lastName;
@@ -105,53 +103,7 @@ exports.postUser = async (req, res, next) => {
   }
 };
 
-exports.postChangePassword = async (req, res, next) => {
-  const validationErrors = validationResult(req);
-  const { currentPassword, newPassword, userId } = req.body;
-  const currentUserId = req.userId;
-
-  try {
-    if (!validationErrors.isEmpty()) {
-      const err = new Error('Validation failed.');
-      err.statusCode = 422;
-      err.valErrArr = validationErrors.array();
-      throw err;
-    }
-
-    const user = await Admin.findOne({ _id: userId });
-
-    if (!user) {
-      const err = new Error('The user is not found');
-      err.statusCode = 401;
-      throw err;
-    }
-
-    if ((userId !== currentUserId)) {
-      const err = new Error('Access is not allowed!');
-      err.statusCode = 403;
-      throw err;
-    }
-
-    const isPwEqual = await bcrypt.compare(currentPassword, user.password);
-    if (!isPwEqual) {
-      const err = new Error('Wrong current password!');
-      err.statusCode = 401;
-      throw err;
-    }
-
-    user.password = await bcrypt.hash(newPassword, 12);
-
-    await user.save();
-
-    res.status(200).json({ message: 'Password is changed' });
-
-  } catch (err) {
-    next(err);
-  }
-};
-
-// PUT
-exports.putUser = async (req, res, next) => {
+exports.put = async (req, res, next) => {
   const validationErrors = validationResult(req);
   const id = req.params.id;
   const currentUserId = req.userId;
@@ -201,8 +153,52 @@ exports.putUser = async (req, res, next) => {
   }
 };
 
-// DELETE
-exports.deleteUser = async (req, res, next) => {
+exports.changePassword = async (req, res, next) => {
+  const validationErrors = validationResult(req);
+  const { currentPassword, newPassword, userId } = req.body;
+  const currentUserId = req.userId;
+
+  try {
+    if (!validationErrors.isEmpty()) {
+      const err = new Error('Validation failed.');
+      err.statusCode = 422;
+      err.valErrArr = validationErrors.array();
+      throw err;
+    }
+
+    const user = await Admin.findOne({ _id: userId });
+
+    if (!user) {
+      const err = new Error('The user is not found');
+      err.statusCode = 401;
+      throw err;
+    }
+
+    if ((userId !== currentUserId)) {
+      const err = new Error('Access is not allowed!');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    const isPwEqual = await bcrypt.compare(currentPassword, user.password);
+    if (!isPwEqual) {
+      const err = new Error('Wrong current password!');
+      err.statusCode = 401;
+      throw err;
+    }
+
+    user.password = await bcrypt.hash(newPassword, 12);
+
+    await user.save();
+
+    res.status(200).json({ message: 'Password is changed' });
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.delete = async (req, res, next) => {
   const id = req.params.id;
 
   try {

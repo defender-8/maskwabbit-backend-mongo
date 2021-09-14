@@ -1,18 +1,16 @@
 const express = require('express');
 const { body } = require('express-validator');
 
-const { isAuth, isSuperAdmin, isAdmin } = require('../middleware/auth');
+const { isAuth, isSuperAdmin, isAdmin } = require('../../middleware/auth');
 
-const controller = require('../controllers/admin');
+const controller = require('../../controllers/admin');
 
 const router = express.Router();
 
-// GET
-router.get('/admin/admins', isAuth, isSuperAdmin, controller.getUsers);
-router.get('/admin/admins/:id', isAuth, isAdmin, controller.getUser);
+router.get('/', isAuth, isSuperAdmin, controller.get);
+router.get('/:id', isAuth, isAdmin, controller.getById);
 
-// POST
-router.post('/admin/admins/new', isAuth, isSuperAdmin, [
+router.post('/new', isAuth, isSuperAdmin, [
     body('firstName', 'firstName is required').not().isEmpty().trim(),
     body('lastName', 'lastName is required').not().isEmpty().trim(),
     body('email')
@@ -33,9 +31,9 @@ router.post('/admin/admins/new', isAuth, isSuperAdmin, [
       })
       .trim(),
   ],
-  controller.postUser);
+  controller.post);
 
-router.post('/admin/change-password', isAuth, isAdmin, [
+router.post('/change-password', isAuth, isAdmin, [
     body('currentPassword',
       'Passwords must be 8-20 characters long and include at least 1 lowercase letter, 1 capital letter, 1 number and 1 of special symbols !@#$%^&*-_')
       .matches(
@@ -55,10 +53,9 @@ router.post('/admin/change-password', isAuth, isAdmin, [
       })
       .trim(),
   ],
-  controller.postChangePassword);
+  controller.changePassword);
 
-// PUT
-router.put('/admin/admins/:id', isAuth, isAdmin, [
+router.put('/:id', isAuth, isAdmin, [
     body('firstName', 'firstName is required').not().isEmpty().trim(),
     body('lastName', 'lastName is required').not().isEmpty().trim(),
     body('email')
@@ -66,10 +63,9 @@ router.put('/admin/admins/:id', isAuth, isAdmin, [
       .withMessage('Please enter a valid email')
       .normalizeEmail({ gmail_remove_dots: false }),
   ],
-  controller.putUser);
+  controller.put);
 
-// DELETE
-router.delete('/admin/admins/:id', isAuth, isAdmin, controller.deleteUser);
+router.delete('/:id', isAuth, isAdmin, controller.delete);
 
 module.exports = router;
 

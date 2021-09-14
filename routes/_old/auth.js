@@ -2,12 +2,12 @@ const express = require('express');
 
 const { body } = require('express-validator');
 
-const Admin = require('../models/admin');
-const Client = require('../models/client');
+const Admin = require('../../models/admin');
+const Client = require('../../models/client');
 
 // const { isAdminNotAuth } = require('../middleware/auth');
 
-const authController = require('../controllers/auth');
+const authController = require('../../controllers/auth');
 
 const router = express.Router();
 
