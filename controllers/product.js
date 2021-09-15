@@ -6,10 +6,10 @@ const Product = require('../models/product');
 
 exports.get = async (req, res, next) => {
   let { page, sorter, filters, search } = req.query;
-  let { currentPage, pageSize } = page;
+  let { current, size } = page;
 
-  currentPage = +currentPage;
-  pageSize = +pageSize;
+  current = +current;
+  size = +size;
 
   const regExObj = { $regex: new RegExp(search), $options: 'i' };
 
@@ -25,8 +25,8 @@ exports.get = async (req, res, next) => {
     const dataArray = await Product.find(conditions)
       .sort(sorter)
       .populate('categories')
-      .skip(((currentPage - 1) * pageSize))
-      .limit(pageSize);
+      .skip(((current - 1) * size))
+      .limit(size);
 
     const total = await Product.countDocuments(conditions);
 
