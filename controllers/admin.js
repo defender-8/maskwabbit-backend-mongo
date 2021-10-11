@@ -18,14 +18,14 @@ exports.get = async (req, res, next) => {
   };
 
   try {
-    const users = await Admin.find(conditions)
+    const dataArray = await Admin.find(conditions)
       .sort(sorter)
       .skip(((currentPage - 1) * pageSize))
       .limit(pageSize);
 
     const total = await Admin.countDocuments(conditions);
 
-    res.status(200).json({ users, total });
+    res.status(200).json({ dataArray, total });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -40,16 +40,16 @@ exports.getById = async (req, res, next) => {
   const currentUserRole = req.userRole;
 
   try {
-    const user = await Admin.findById(id);
+    const dataSingle = await Admin.findById(id);
 
-    if (user.role === 'super admin') {
+    if (dataSingle.role === 'super admin') {
       if (id !== currentUserId) {
         const err = new Error('Access is not allowed!');
         err.statusCode = 403;
         throw err;
       }
     }
-    if (user.role === 'admin') {
+    if (dataSingle.role === 'admin') {
       if ((id !== currentUserId) && (currentUserRole !== 'super admin')) {
         const err = new Error('Access is not allowed!');
         err.statusCode = 403;
@@ -57,7 +57,7 @@ exports.getById = async (req, res, next) => {
       }
     }
 
-    res.status(200).json({ user });
+    res.status(200).json({ dataSingle });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
