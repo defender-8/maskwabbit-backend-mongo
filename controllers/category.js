@@ -19,17 +19,17 @@ exports.get = async (req, res, next) => {
         title: regExObj,
       };
 
-      const categories = await Category.find(conditions)
+      const dataArray = await Category.find(conditions)
         .sort(sorter)
         .skip(((currentPage - 1) * pageSize))
         .limit(pageSize);
 
       const total = await Category.countDocuments(conditions);
 
-      res.status(200).json({ categories, total });
+      res.status(200).json({ dataArray, total });
     } else {
-      const categories = await Category.find();
-      res.status(200).json({ categories });
+      const dataArray = await Category.find();
+      res.status(200).json({ dataArray });
     }
   } catch (err) {
     if (!err.statusCode) {
@@ -43,8 +43,8 @@ exports.getById = async (req, res, next) => {
   const id = req.params.id;
 
   try {
-    const category = await Category.findById(id);
-    res.status(200).json({ category });
+    const dataSingle = await Category.findById(id);
+    res.status(200).json({ dataSingle });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -132,11 +132,6 @@ exports.delete = async (req, res, next) => {
   const id = req.params.id;
 
   try {
-    // Check UI/UX if response is too long for some reason
-    /*const a = await new Promise((resolve, reject) => {
-      setTimeout(() => resolve('done'), 3000);
-    });*/
-
     Category.findOneAndDelete(
       { _id: id },
       (err, doc) => {
