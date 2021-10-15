@@ -18,18 +18,19 @@ exports.get = async (req, res, next) => {
   };
 
   try {
-    const dataArray = await Admin.find(conditions)
+    const dataArr = await Admin.find(conditions)
       .sort(sorter)
       .skip(((currentPage - 1) * pageSize))
       .limit(pageSize);
 
     const total = await Admin.countDocuments(conditions);
 
-    res.status(200).json({ dataArray, total });
+    res.status(200).json({ dataArr, total });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
     next(err);
   }
 };
@@ -45,14 +46,18 @@ exports.getById = async (req, res, next) => {
     if (dataSingle.role === 'super admin') {
       if (id !== currentUserId) {
         const err = new Error('Access is not allowed!');
+
         err.statusCode = 403;
+
         throw err;
       }
     }
     if (dataSingle.role === 'admin') {
       if ((id !== currentUserId) && (currentUserRole !== 'super admin')) {
         const err = new Error('Access is not allowed!');
+
         err.statusCode = 403;
+
         throw err;
       }
     }
@@ -62,6 +67,7 @@ exports.getById = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
     next(err);
   }
 };
@@ -74,15 +80,20 @@ exports.post = async (req, res, next) => {
   try {
     if (!validationErrors.isEmpty()) {
       const err = new Error('Validation failed.');
+
       err.statusCode = 422;
       err.valErrArr = validationErrors.array();
+
       throw err;
     }
 
     const user = await Admin.findOne({ email });
+
     if (user) {
       const err = new Error('A user with this email is already exist');
+
       err.statusCode = 409;
+
       throw err;
     }
 
@@ -99,6 +110,7 @@ exports.post = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
     next(err);
   }
 };
@@ -115,8 +127,10 @@ exports.put = async (req, res, next) => {
   try {
     if (!validationErrors.isEmpty()) {
       const err = new Error('Validation failed, entered data is incorrect!');
+
       err.statusCode = 422;
       err.valErrArr = validationErrors.array();
+
       throw err;
     }
 
@@ -125,14 +139,18 @@ exports.put = async (req, res, next) => {
     if (user.role === 'super admin') {
       if (id !== currentUserId) {
         const err = new Error('Access is not allowed!');
+
         err.statusCode = 403;
+
         throw err;
       }
     }
     if (user.role === 'admin') {
       if ((id !== currentUserId) && (currentUserRole !== 'super admin')) {
         const err = new Error('Access is not allowed!');
+
         err.statusCode = 403;
+
         throw err;
       }
     }
@@ -149,6 +167,7 @@ exports.put = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
     next(err);
   }
 };
@@ -161,8 +180,10 @@ exports.changePassword = async (req, res, next) => {
   try {
     if (!validationErrors.isEmpty()) {
       const err = new Error('Validation failed.');
+
       err.statusCode = 422;
       err.valErrArr = validationErrors.array();
+
       throw err;
     }
 
@@ -170,20 +191,26 @@ exports.changePassword = async (req, res, next) => {
 
     if (!user) {
       const err = new Error('The user is not found');
+
       err.statusCode = 401;
+
       throw err;
     }
 
     if ((userId !== currentUserId)) {
       const err = new Error('Access is not allowed!');
+
       err.statusCode = 403;
+
       throw err;
     }
 
     const isPwEqual = await bcrypt.compare(currentPassword, user.password);
     if (!isPwEqual) {
       const err = new Error('Wrong current password!');
+
       err.statusCode = 401;
+
       throw err;
     }
 
@@ -203,12 +230,14 @@ exports.delete = async (req, res, next) => {
 
   try {
     await Admin.deleteOne({ _id: id });
+
     res.status(200).json({ message: 'User is removed' });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
       err.message = 'Deleting is failed';
     }
+
     next(err);
   }
 };

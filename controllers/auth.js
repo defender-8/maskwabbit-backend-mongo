@@ -63,7 +63,7 @@ exports.signUp = async (req, res, next) => {
         lastName: newUser.lastName,
         fullName: newUser.fullName,
       },
-      message: 'You are successfully signed up!',
+      message: 'You are signed up!',
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -114,14 +114,17 @@ exports.signIn = (model) => {
       const expiryDate = Date.now() + 3600000;
 
       res.status(200).json({
-        token,
-        expiryDate,
-        _id: user._id.toString(),
-        role: user.role,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        fullName: user.fullName,
+        user: {
+          token,
+          expiryDate,
+          _id: user._id.toString(),
+          role: user.role,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          fullName: user.fullName,
+        },
+        message: 'You are signed in!',
       });
     } catch (err) {
       if (!err.statusCode) {
@@ -175,9 +178,9 @@ exports.resetPassword = (model) => {
         transporter.sendMail({
           from: 'shop@test.com',
           to: email,
-          subject: 'Password reset',
+          subject: 'Password Reset',
           html: `
-          <p>You requested a password reset.</p>
+          <p>You Requested a Password Reset.</p>
           <p>Click this <a href="http://localhost:3000/auth/password-reset/${token}">link</a> to set a new password.</p>
         `,
         }, (err, info) => {

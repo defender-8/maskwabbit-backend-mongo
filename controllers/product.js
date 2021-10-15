@@ -17,12 +17,12 @@ exports.get = async (req, res, next) => {
     title: regExObj,
   };
 
-  if (filters.categories) {
+  if (filters && filters.categories) {
     conditions.categories = { $in: filters.categories };
   }
 
   try {
-    const dataArray = await Product.find(conditions)
+    const dataArr = await Product.find(conditions)
       .sort(sorter)
       .populate('categories')
       .skip(((current - 1) * size))
@@ -30,11 +30,12 @@ exports.get = async (req, res, next) => {
 
     const total = await Product.countDocuments(conditions);
 
-    res.status(200).json({ dataArray, total });
+    res.status(200).json({ dataArr, total });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
     next(err);
   }
 };
@@ -49,6 +50,7 @@ exports.getById = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
     next(err);
   }
 };
@@ -58,7 +60,7 @@ exports.post = async (req, res, next) => {
   const { title, description, categories, price, amount } = req.body;
   const image = req.file.path;
 
-  const product = new Product({
+  const dataSingle = new Product({
     title,
     image,
     description,
@@ -71,23 +73,29 @@ exports.post = async (req, res, next) => {
   try {
     if (!validationErrors.isEmpty()) {
       const err = new Error('Validation failed, entered data is incorrect!');
+
       err.statusCode = 422;
       err.valErrArr = validationErrors.array();
+
       throw err;
     }
 
     if (!req.file) {
       const err = new Error('No image provided!');
+
       err.statusCode = 422;
+
       throw err;
     }
 
-    await product.save();
+    await dataSingle.save();
+
     res.status(201).json({ message: 'Product is saved!' });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
     next(err);
   }
 };
@@ -102,8 +110,10 @@ exports.put = async (req, res, next) => {
   try {
     if (!validationErrors.isEmpty()) {
       const err = new Error('Validation failed, entered data is incorrect!');
+
       err.statusCode = 422;
       err.valErrArr = validationErrors.array();
+
       throw err;
     }
 
@@ -129,6 +139,7 @@ exports.put = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
     next(err);
   }
 };
@@ -141,6 +152,7 @@ exports.delete = async (req, res, next) => {
       { _id: id },
       (err, doc) => {
         if (err) throw err;
+
         deleteFile(doc.image);
       },
     );
@@ -150,6 +162,7 @@ exports.delete = async (req, res, next) => {
       err.statusCode = 500;
       err.message = 'Deleting is failed';
     }
+
     next(err);
   }
 };
