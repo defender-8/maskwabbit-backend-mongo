@@ -7,6 +7,7 @@ const controller = require('../../controllers/client');
 const router = express.Router();
 
 router.get('/', isAuth, isAdmin, controller.get);
+router.get('/:id', isAuth, isAdmin, controller.getById);
 
 router.delete('/:id', isAuth, isAdmin, controller.delete);
 

@@ -36,18 +36,9 @@ exports.get = async (req, res, next) => {
 
 exports.getById = async (req, res, next) => {
   const id = req.params.id;
-  const currentUserId = req.userId;
 
   try {
     const dataSingle = await Client.findById(id);
-
-    if (id !== currentUserId) {
-      const err = new Error('Access is not allowed!');
-
-      err.statusCode = 403;
-
-      throw err;
-    }
 
     res.status(200).json({ dataSingle });
   } catch (err) {
